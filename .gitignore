@@ -1,0 +1,129 @@
+################################################################################
+# ENTA - public repository
+#
+# DENY BY DEFAULT. Everything is ignored unless a rule below explicitly
+# un-ignores it. The ENTA working folder holds confidential microdata, API
+# tokens, internal notes and pipeline output alongside the code, so an
+# allow-list is the only structure that keeps a newly created file from
+# reaching the public repo by accident. When you add a file that belongs in
+# the repo, add it here too - "git add" alone will not pick it up.
+#
+# The repository holds everything needed to reproduce ENTA except the
+# licensed microdata (EU-SILC, LFS, HBS, EUROMOD, Konsumerhebung): the code,
+# the input files that cannot be downloaded from Eurostat, and the manual.
+# Output - age profiles, aggregates, final data - is not stored; the code
+# rebuilds it, and the published data are on Zenodo.
+################################################################################
+
+# 1. Ignore everything ...
+*
+
+# 2. ... but still descend into directories, so the rules below can match.
+!*/
+
+
+################################################################################
+# 3. Code
+################################################################################
+
+!.gitignore
+!/README.md
+
+# Setup: path globals, the download switch, and the adjust*/control programs
+# that nearly every other file calls. Run this first.
+!ENTA_setup.do
+
+# Final compilation
+!ENTA_compilation1_esa.do
+!ENTA_compilation2_nta.do
+
+# Input-data preparation, age profiles, aggregates
+!ENTA_input_data/*.do
+!ENTA_ageprofiles/*.do
+!ENTA_aggregates/*.do
+
+# Verification of the published output, and the ledger it reads.
+!ENTA_diagnostic/diagnostic_scan.R
+!ENTA_diagnostic/make_nta_esa_same.R
+!ENTA_diagnostic/checks.csv
+!ENTA_diagnostic/identities.csv
+!ENTA_diagnostic/nta_esa_same.csv
+!ENTA_diagnostic/events.csv
+!ENTA_diagnostic/event_scope.csv
+!ENTA_diagnostic/README.md
+!ENTA_diagnostic/scan_decisions.md
+
+
+################################################################################
+# 4. Input data that the code cannot download from Eurostat
+#
+# The Eurostat tables themselves are NOT stored: set the download switch in
+# ENTA_setup.do and the Suppl_*.do / Aggr_ESA2010.do files fetch them.
+################################################################################
+
+# World Bank CPI (manual download) and DG TAXUD tax revenue by function
+!ENTA_input_data/Original_input_data/CPI_world_bank.xls
+!ENTA_input_data/Original_input_data/taxud_tax_ec_func_en.csv
+
+# UN World Population Prospects - the API needs a personal token
+!ENTA_input_data/Original_input_data/population_UN.dta
+
+# Public health profile from the 2018 Ageing Report; the code that builds it
+# is not published
+!ENTA_input_data/ENTA_input_datasets/CGH_AWG.dta
+
+# Tax shares derived from EUROMOD (country x year aggregates, no microdata)
+!ENTA_input_data/ENTA_input_datasets/taxr.dta
+!ENTA_input_data/ENTA_input_datasets/inctax_nonempl_decomp.dta
+
+
+################################################################################
+# 5. Manual - the PDF only, not its LaTeX sources
+################################################################################
+
+!2026_ENTA_Manual_V_2_0_0/Manual.pdf
+
+
+################################################################################
+# 6. Never share - restated, so the intent survives any edit above
+#
+# Deny-by-default already excludes all of this. These rules only name what
+# must never be un-ignored. Do NOT add a folder here that section 3-5 opens
+# (e.g. "ENTA_input_data/Original_input_data/"): git cannot re-include a file
+# from an excluded folder, so the allow rules above would silently stop
+# working.
+################################################################################
+
+# Machine-specific setup
+ENTA_setup_TU.do
+
+# Credentials
+token_population_data.txt
+**/un_api_token.txt
+
+# Output (rebuilt by the code, published on Zenodo). Contents only, not the
+# folders: each keeps its README.md so a fresh clone has the folder, and git
+# cannot re-include a file from an excluded folder.
+ENTA_output_data/*
+!ENTA_output_data/README.md
+ENTA_ageprofiles/ageprofiles/*
+!ENTA_ageprofiles/ageprofiles/README.md
+ENTA_aggregates/*.dta
+
+# Not published: health source data and the code that builds CGH_AWG
+ENTA_data_other/
+
+# Internal working notes
+CLAUDE.md
+ENTA_bug_report.txt
+ENTA_todo.txt
+ENTA_todo_next_version.txt
+ENTA_next_session.md
+TX_residual_review.md
+
+# Editor / OS byproducts
+.claude/
+desktop.ini
+*.log
+*.stswp
+~*.stswp
