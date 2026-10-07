@@ -1,0 +1,45 @@
+CHECK,FILE,ITEM,TESTED,FAILED
+1 Profiles = aggregates,esa,all profiles with an aggregate,17388,0
+1 Profiles = aggregates,nta,all profiles with an aggregate,17388,0
+2 Components = total,aggregates,Y = YEM + YA,778,0
+2 Components = total,aggregates,YEM = YE + YM,778,0
+2 Components = total,aggregates,YA = YP + YO,778,0
+2 Components = total,aggregates,T = TYEM + TYA + TB + TCON + TX,778,0
+2 Components = total,aggregates,TB = TBSPEN + TBSN + TBPPEN,489,0
+2 Components = total,aggregates,TX = TXH + TXNPISH,746,0
+2 Components = total,aggregates,BS = BSPEN + BSFAM + BSU + BSX,702,0
+2 Components = total,aggregates,BPPEN = BPSOCfc - TPSOCfc,778,0
+2 Components = total,aggregates,CH = CHE + CHH + CHR + CHX,778,0
+2 Components = total,esa,Y = YEM + YA,100602,0
+2 Components = total,esa,YEM = YE + YM,100602,0
+2 Components = total,esa,YA = YP + YO,100602,0
+2 Components = total,esa,T = TYEM + TYA + TB + TCON + TX,100602,0
+2 Components = total,esa,TB = TBSPEN + TBSN + TBPPEN,100602,0
+2 Components = total,esa,BS = BSPEN + BSFAM + BSU + BSX,100602,0
+2 Components = total,esa,BPPEN = BPSOCfc - TPSOCfc,100602,0
+2 Components = total,esa,BP = BPB + BPW - TPW,100602,0
+2 Components = total,esa,CH = CHE + CHH + CHR + CHX,100602,0
+2 Components = total,esa,CG = CGE + CGH + CGX,100602,0
+2 Components = total,nta,Y = YL + YA,100602,0
+2 Components = total,nta,YA = YAF + YAG,100602,0
+2 Components = total,nta,YAF = YAH + YAC,100602,0
+2 Components = total,nta,C = CF + CG,100602,0
+2 Components = total,nta,CF = CFE + CFH + CFR + CFX,100602,0
+2 Components = total,nta,CG = CGE + CGH + CGX,100602,0
+2 Components = total,nta,S = SF + SG,100602,0
+2 Components = total,nta,YDF = CF + SF,100602,0
+2 Components = total,nta,YDH = CF + SH,100602,0
+2 Components = total,nta,YDC = SC,100602,0
+2 Components = total,nta,C + S = YL + YAF + YAG + TFB + TFW - TGO + TGI,100602,0
+3 Men + women = total,esa,"population, every age",33534,0
+3 Men + women = total,esa,"profiles, summed over ages",19458,0
+3 Men + women = total,nta,"population, every age",33534,0
+3 Men + women = total,nta,"profiles, summed over ages",18630,0
+4 No negative values,esa,"cells (country, year, indicator, sex, age)",2108754,0
+4 No negative values,nta,"cells (country, year, indicator, sex, age)",1710234,0
+5 Ages 0-80 complete,esa,information: cells with a missing value,0,
+5 Ages 0-80 complete,esa,"profiles (country, year, indicator, sex)",67068,0
+5 Ages 0-80 complete,esa,"men, women and total present",22356,0
+5 Ages 0-80 complete,nta,information: cells with a missing value,0,
+5 Ages 0-80 complete,nta,"profiles (country, year, indicator, sex)",57132,0
+5 Ages 0-80 complete,nta,"men, women and total present",19044,0

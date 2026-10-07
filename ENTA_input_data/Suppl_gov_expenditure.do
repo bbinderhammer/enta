@@ -2,20 +2,39 @@
 * Government expenditure by function and type
 ********************************************************************************
 
-* Input:  Eurostat gov_10a_exp
-* Output: ENTA_input_data\ENTA_input_datasets\gov_expenditure.dta
+* Input:  ENTA_input_data/Original_input_data/gov_10a_exp.dta - Eurostat
+*         government expenditure by function (COFOG), downloaded when global
+*         download is 1
+* Output: ENTA_input_data/ENTA_input_datasets/gov_expenditure.dta - social
+*         benefits by function (BS...) and government final consumption by
+*         function (CG...), one row per CNT2 YEAR. Read by
+*         ENTA_aggregates/ENTA_aggregates_compilation.do: the benefit
+*         components as shares (rescaled to the ESA total BS, Section 1.3),
+*         CGE (with its education levels), CGH, CGHIN and CGHOUT as levels
+*         (government sector).
+* Known gap: in 1995-2000 (BG 1995-2006 and 2009-2010) several countries
+* report the P3 breakdown of health (GF0701-GF0703) and of sickness and
+* disability (GF1001) only from 2000 or 2001. CGH is then GF07 alone, too low
+* by the GF1001 part (share of CGH when GF1001 starts: SE 20%, FI 18%, DE 12%,
+* RO, LT, LV 6-9%, IT 2%, EL and BG below 1%), and CGHIN and CGHOUT are
+* missing. Not imputed - documented as a limitation.
 
 ********************************************************************************
 * 0. Load data
 ********************************************************************************
 
-  if "$download"=="1" {
-  * Government finance statistics
-    cd ENTA_input_data\Original_input_data
-    eurostatuse gov_10a_exp, noflags clear
-    save gov_10a_exp, replace
+if "$download"=="1" {
+    * Government finance statistics. In Stata's temp folder, outside Dropbox:
+    * eurostatuse erases its working file at the end, which fails while
+    * Dropbox holds it. keepdim() keeps only what this file uses (sector S13,
+    * MIO_EUR, D62/P3/D62_D632): eurostatuse filters before converting the
+    * values, which takes over an hour for the full table (1.28 million rows)
+    * and 2 minutes for these 8,160.
+    cd "`c(tmpdir)'"
+    eurostatuse gov_10a_exp, noflags clear keepdim("S13; MIO_EUR; D62 P3 D62_D632")
     cd "$wkdir"
-  }
+    save ENTA_input_data/Original_input_data/gov_10a_exp, replace
+}
 
 use "ENTA_input_data/Original_input_data/gov_10a_exp", clear
 
@@ -32,6 +51,12 @@ keep if inlist(cofog99, "TOTAL", "GF07", "GF0701", "GF0702", "GF0703", ///
 * 1. Reshape wide years to long
 ********************************************************************************
 
+* The year columns can be of mixed type: when eurostatuse stops before its
+* formatting step, the years with data are text with flags (": m", ":", "p",
+* "b") and the empty ones numeric, and reshape refuses mixed types. Convert
+* them first; columns that are already numeric are left as they are.
+destring gov_10a_exp*, replace ignore(":" "m" "b" "p" "n" " ")
+
 reshape long gov_10a_exp, i(cofog99 geo na_item) j(year)
 rename gov_10a_exp NA_str
 rename geo CNT2
@@ -43,11 +68,11 @@ rename year YEAR
 * missing either way.
 capture confirm string variable NA_str
 if !_rc {
-  destring NA_str, ignore(":" "m" "b" "p" "n" " ") gen(NA)
-  drop NA_str
+    destring NA_str, ignore(":" "m" "b" "p" "n" " ") gen(NA)
+    drop NA_str
 }
 else {
-  rename NA_str NA
+    rename NA_str NA
 }
 
 * Drop country-years with no data at all except Slovakia 2008 and 2009
@@ -66,12 +91,12 @@ sort CNT2 cofog99 YEAR
 
 gen varname = ""
 
-* --- Total ---
+* Total
 replace varname = "BScofog"  if cofog99 == "TOTAL"    & na_item == "D62"
 replace varname = "BScofoga" if cofog99 == "TOTAL"    & na_item == "D62_D632"
 replace varname = "CGcofog"  if cofog99 == "TOTAL"    & na_item == "P3"
 
-* --- Education ---
+* Education
 replace varname = "BSE"      if cofog99 == "GF09"     & na_item == "D62"
 replace varname = "BSEa"     if cofog99 == "GF09"     & na_item == "D62_D632"
 replace varname = "CGE"      if cofog99 == "GF09"     & na_item == "P3"
@@ -80,7 +105,7 @@ replace varname = "CGESEC"   if cofog99 == "GF0902"   & na_item == "P3"
 replace varname = "CGEPSEC"  if cofog99 == "GF0903"   & na_item == "P3"
 replace varname = "CGETER"   if cofog99 == "GF0904"   & na_item == "P3"
 
-* --- Health (GF07 only for D62/D62_D632; GF07+GF1001 for P3) ---
+* Health (GF07 only for D62/D62_D632; GF07+GF1001 for P3)
 * BSH is kept for reference only; it is part of the residual BSX (section 5)
 replace varname = "BSH"      if cofog99 == "GF07"     & na_item == "D62"
 replace varname = "BSHa"     if cofog99 == "GF07"     & na_item == "D62_D632"
@@ -90,31 +115,31 @@ replace varname = "CGH"      if cofog99 == "GF1001"   & na_item == "P3"
 replace varname = "CGHOUT"   if inlist(cofog99, "GF0701", "GF0702") & na_item == "P3"
 replace varname = "CGHIN"    if cofog99 == "GF0703"   & na_item == "P3"
 
-* --- Sickness and disability ---
+* Sickness and disability
 replace varname = "BSD"      if cofog99 == "GF1001"   & na_item == "D62"
 replace varname = "BSDa"     if cofog99 == "GF1001"   & na_item == "D62_D632"
 
-* --- Old age ---
+* Old age
 replace varname = "BSOA"     if cofog99 == "GF1002"   & na_item == "D62"
 replace varname = "BSOAa"    if cofog99 == "GF1002"   & na_item == "D62_D632"
 replace varname = "CGOA"     if cofog99 == "GF1002"   & na_item == "P3"
 
-* --- Survivor ---
+* Survivor
 replace varname = "BSS"      if cofog99 == "GF1003"   & na_item == "D62"
 replace varname = "BSSa"     if cofog99 == "GF1003"   & na_item == "D62_D632"
 replace varname = "CGS"      if cofog99 == "GF1003"   & na_item == "P3"
 
-* --- Family ---
+* Family
 replace varname = "BSF"      if cofog99 == "GF1004"   & na_item == "D62"
 replace varname = "BSFa"     if cofog99 == "GF1004"   & na_item == "D62_D632"
 replace varname = "CGF"      if cofog99 == "GF1004"   & na_item == "P3"
 
-* --- Unemployment ---
+* Unemployment
 replace varname = "BSU"      if cofog99 == "GF1005"   & na_item == "D62"
 replace varname = "BSUa"     if cofog99 == "GF1005"   & na_item == "D62_D632"
 replace varname = "CGU"      if cofog99 == "GF1005"   & na_item == "P3"
 
-* --- Other social protection (GF1006-GF1009) ---
+* Other social protection (GF1006-GF1009)
 * BSX is replaced by the residual in section 5
 replace varname = "BSX"  if inlist(cofog99,"GF1006","GF1007","GF1008","GF1009") & na_item == "D62"
 replace varname = "BSXa" if inlist(cofog99,"GF1006","GF1007","GF1008","GF1009") & na_item == "D62_D632"
@@ -123,10 +148,16 @@ replace varname = "CGSX" if inlist(cofog99,"GF1006","GF1007","GF1008","GF1009") 
 drop if varname == ""
 
 * Collapse groups that need summing (CGH, CGHOUT, BSX, BSXa, CGSX)
+* collapse (sum) turns a group with no data into 0. For the consumption sums
+* (CGH, CGHOUT, CGSX) that would publish 0 where Eurostat has nothing (CGHOUT
+* 1995-2000 in 9 countries), so they are set to missing there. BSX and BSXa
+* keep the 0 (see section 3; BSX is rebuilt as a residual in section 5).
 preserve
-  collapse (sum) NA if inlist(varname, "CGH", "CGHOUT", "BSX", "BSXa", "CGSX"), by(CNT2 YEAR varname)
-  tempfile coll
-  save `coll'
+collapse (sum) NA (count) nNA=NA if inlist(varname, "CGH", "CGHOUT", "BSX", "BSXa", "CGSX"), by(CNT2 YEAR varname)
+replace NA = . if nNA==0 & inlist(varname, "CGH", "CGHOUT", "CGSX")
+drop nNA
+tempfile coll
+save `coll'
 restore
 drop if inlist(varname, "CGH", "CGHOUT", "BSX", "BSXa", "CGSX")
 keep NA CNT2 YEAR varname
@@ -196,14 +227,14 @@ drop *sh imp
 * placeholder input for that later rescaling step.
 
 preserve
-  keep if CNT2=="SK" & YEAR==2010
-  expand 2
-  bysort CNT2: gen _rep = _n
-  replace YEAR = 2008 if _rep==1
-  replace YEAR = 2009 if _rep==2
-  drop _rep
-  tempfile sk0809
-  save `sk0809'
+keep if CNT2=="SK" & YEAR==2010
+expand 2
+bysort CNT2: gen _rep = _n
+replace YEAR = 2008 if _rep==1
+replace YEAR = 2009 if _rep==2
+drop _rep
+tempfile sk0809
+save `sk0809'
 restore
 
 * Section 1 keeps all-missing rows for Slovakia 2008/2009 - drop them now so

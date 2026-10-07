@@ -28,49 +28,68 @@
 
 !.gitignore
 !/README.md
+!/LICENSE
+!/CITATION.cff
 
-# Setup: path globals, the download switch, and the adjust*/control programs
-# that nearly every other file calls. Run this first.
+# Setup: path globals, the download switch, and the programs (adjust*,
+# gensex) that nearly every other file calls. Run this first.
 !ENTA_setup.do
 
 # Final compilation
 !ENTA_compilation1_esa.do
 !ENTA_compilation2_nta.do
+!ENTA_compilation3_parquet.R
 
 # Input-data preparation, age profiles, aggregates
 !ENTA_input_data/*.do
 !ENTA_ageprofiles/*.do
 !ENTA_aggregates/*.do
 
-# Verification of the published output, and the ledger it reads.
-!ENTA_diagnostic/diagnostic_scan.R
-!ENTA_diagnostic/make_nta_esa_same.R
-!ENTA_diagnostic/checks.csv
-!ENTA_diagnostic/identities.csv
-!ENTA_diagnostic/nta_esa_same.csv
-!ENTA_diagnostic/events.csv
-!ENTA_diagnostic/event_scope.csv
-!ENTA_diagnostic/README.md
-!ENTA_diagnostic/scan_decisions.md
+# Control of the published output: the checks, the ledger they read, and
+# their findings (CSV only; rewritten by every run). No microdata needed.
+# benchmarks/: the public data of the external comparisons (4a-4c); the two
+# method PDFs there are third-party documents and stay out.
+!ENTA_output_control/*.do
+!ENTA_output_control/ledger.csv
+!ENTA_output_control/README.md
+!ENTA_output_control/results/*.csv
+!ENTA_output_control/results/external/*.csv
+!ENTA_output_control/benchmarks/*.csv
+!ENTA_output_control/benchmarks/*.dta
+
+# Checks that need the microdata, run by hand (manual chapter 5).
+!ENTA_microdata_checks/*.do
+!ENTA_microdata_checks/README.md
 
 
 ################################################################################
-# 4. Input data that the code cannot download from Eurostat
-#
-# The Eurostat tables themselves are NOT stored: set the download switch in
-# ENTA_setup.do and the Suppl_*.do / Aggr_ESA2010.do files fetch them.
+# 4. Input data: the Eurostat tables as downloaded, and the files that the
+#    code cannot download
 ################################################################################
+
+# The Eurostat tables used for this version (Stata files under their Eurostat
+# code). Eurostat revises its tables, so they are stored to make the
+# published aggregates reproducible; the download switch in ENTA_setup.do
+# fetches current versions instead.
+!ENTA_input_data/Original_input_data/*.dta
 
 # World Bank CPI (manual download) and DG TAXUD tax revenue by function
 !ENTA_input_data/Original_input_data/CPI_world_bank.xls
 !ENTA_input_data/Original_input_data/taxud_tax_ec_func_en.csv
+# DG TAXUD national tax lists and PIT split (manual download; Suppl_tax_list.do)
+!ENTA_input_data/Original_input_data/National_tax_list_2026.xlsx
 
-# UN World Population Prospects - the API needs a personal token
-!ENTA_input_data/Original_input_data/population_UN.dta
+# UN World Population Prospects (population_UN.dta, covered by the rule
+# above) - the API needs a personal token, which is never shared (section 6)
 
-# Public health profile from the 2018 Ageing Report; the code that builds it
-# is not published
+# Public health profile from the 2018 Ageing Report (CGH_AWG.dta). Its
+# source is published too: the Ageing Report charts digitised with
+# WebPlotDigitizer (zip), the script that cleans them and the resulting rates
+# (csv). The code that turns the rates into CGH_AWG is not published.
 !ENTA_input_data/ENTA_input_datasets/CGH_AWG.dta
+!ENTA_input_data/Original_input_data/Health_exp_ageing_report.csv
+!ENTA_input_data/Original_input_data/Health_exp_ageing_report_WebPlotDigitizerDaten.zip
+!ENTA_input_data/Original_input_data/Health_exp_ageing_report_data_cleaning.R
 
 # Tax shares derived from EUROMOD (country x year aggregates, no microdata)
 !ENTA_input_data/ENTA_input_datasets/taxr.dta
@@ -78,10 +97,11 @@
 
 
 ################################################################################
-# 5. Manual - the PDF only, not its LaTeX sources
+# 5. Manual and codebook - the PDFs only, not their LaTeX sources
 ################################################################################
 
 !2026_ENTA_Manual_V_2_0_0/Manual.pdf
+!2026_ENTA_Manual_V_2_0_0/Codebook.pdf
 
 
 ################################################################################
@@ -109,9 +129,6 @@ ENTA_output_data/*
 ENTA_ageprofiles/ageprofiles/*
 !ENTA_ageprofiles/ageprofiles/README.md
 ENTA_aggregates/*.dta
-
-# Not published: health source data and the code that builds CGH_AWG
-ENTA_data_other/
 
 # Internal working notes
 CLAUDE.md

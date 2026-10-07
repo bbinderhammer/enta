@@ -1,0 +1,49 @@
+# Citation file (https://citation-file-format.github.io). GitHub shows the
+# "preferred-citation" below under "Cite this repository": the ENTA data on
+# Zenodo, the same citation as in the Zenodo record and the data explorer.
+# 10.5281/zenodo.22550976 is version 2.0.0; 10.5281/zenodo.20360412 covers
+# all versions and resolves to the latest one.
+cff-version: 1.2.0
+message: "If you use ENTA, please cite the data set as given under preferred-citation."
+type: software
+title: "ENTA - Extended National Transfer Accounts: code"
+version: "2.0.0"
+authors:
+  - family-names: Hammer
+    given-names: Bernhard
+    orcid: "https://orcid.org/0000-0003-3082-6383"
+    affiliation: "TU Wien; Vienna Institute of Demography, Austrian Academy of Sciences"
+repository-code: "https://github.com/ntaeurope/enta"
+url: "https://doi.org/10.5281/zenodo.20360412"
+license: MIT
+keywords:
+  - National Transfer Accounts
+  - generational economy
+  - age profiles
+  - Europe
+  - EU-SILC
+  - ESA 2010
+preferred-citation:
+  type: dataset
+  title: "European National Transfer Accounts"
+  version: "2.0.0"
+  year: 2026
+  publisher:
+    name: Zenodo
+  doi: 10.5281/zenodo.22550976
+  url: "https://doi.org/10.5281/zenodo.22550976"
+  license: CC-BY-4.0
+  authors:
+    - family-names: Hammer
+      given-names: Bernhard
+      orcid: "https://orcid.org/0000-0003-3082-6383"
+    - family-names: Istenič
+      given-names: Tanja
+      orcid: "https://orcid.org/0000-0001-5427-8102"
+    - family-names: Verbič
+      given-names: Miroslav
+    - family-names: Sambt
+      given-names: Jože
+    - family-names: Prskawetz
+      given-names: Alexia
+      orcid: "https://orcid.org/0000-0002-2850-6682"

@@ -20,9 +20,22 @@
 * most recent 1-2 years, so it is much larger than the ~3MB processed output),
 * so this whole block must be re-run together rather than split into a
 * download step and a separately-runnable processing step.
+*
+* The download goes through the shell command (curl). If no file arrives -
+* expired token, no connection, or a batch run in which shell did not
+* execute - the block stops with a message instead of processing a stale
+* file.
+*
+* Years: firstyear/lastyear below. lastyear should reach the last year of
+* Eurostat's demo_pjan: Suppl_population.do takes a whole country-year from
+* these data where Eurostat's is missing or incomplete, and a year not
+* covered here then stays missing.
 
 /*
 * Download and process UN population data (re-run manually to refresh)
+
+  local firstyear 1995
+  local lastyear  2025
 
   local tokenfile "ENTA_input_data/Original_input_data/un_api_token.txt"
   file open tf using "`tokenfile'", read text
@@ -35,10 +48,21 @@
   local locs "40,56,100,196,203,276,208,233,300,724,246,250,191,348,372,380,440,442,428,528,616,620,642,752,705,703"
 
   * Stata's copy command can't send a custom Authorization header, so shell
-  * out to curl (built into Windows 10+) instead.
-  cd ENTA_input_data\Original_input_data
-  shell curl -s -H "Authorization: Bearer `token'" "https://population.un.org/dataportalapi/api/v1/data/indicators/47/locations/`locs'/start/1995/end/2025?format=csv" -o population_UN_raw.csv
-  cd $wkdir
+  * out to curl (built into Windows 10+) instead. The raw file of an earlier,
+  * interrupted run is erased first, so that a failed download cannot be
+  * mistaken for a successful one. -f: on an HTTP error (an expired token,
+  * for instance) curl writes no file, instead of saving the error message
+  * as the csv.
+  capture erase ENTA_input_data/Original_input_data/population_UN_raw.csv
+  cd ENTA_input_data/Original_input_data
+  shell curl -s -f -H "Authorization: Bearer `token'" "https://population.un.org/dataportalapi/api/v1/data/indicators/47/locations/`locs'/start/`firstyear'/end/`lastyear'?format=csv" -o population_UN_raw.csv
+  cd "$wkdir"
+
+  capture confirm file ENTA_input_data/Original_input_data/population_UN_raw.csv
+  if _rc {
+      display as error "Suppl_population_UN.do: nothing downloaded. Check that the token in `tokenfile' is still valid (1 year) and the connection works; in batch mode, try running the file interactively."
+      exit 601
+  }
 
   * varnames(2): the API's CSV starts with a "sep =|" hint line (row 1),
   * real headers are row 2 - rows before the header row are skipped
@@ -74,8 +98,16 @@
   replace SEX=2 if sex=="Female"
 
   keep CNT2 YEAR SEX AGE POPun
+
+  * One row per country, year, sex (0-2) and age (0-100), complete for the 26
+  * countries and every requested year - stops here if the API returns
+  * another variant or category, or leaves a gap
+  isid CNT2 YEAR SEX AGE
+  assert !missing(CNT2, YEAR, SEX, AGE, POPun)
+  assert _N == 26 * (`lastyear' - `firstyear' + 1) * 3 * 101
+
   sort CNT2 YEAR SEX AGE
-  save ENTA_input_data\Original_input_data\population_UN, replace
+  save ENTA_input_data/Original_input_data/population_UN, replace
 
   erase ENTA_input_data/Original_input_data/population_UN_raw.csv
 */
