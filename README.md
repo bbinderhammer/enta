@@ -1,6 +1,6 @@
-# ENTA - Extended National Transfer Accounts
+# ENTA - European National Transfer Accounts
 
-ENTA is a Stata pipeline that builds Extended National Transfer Accounts
+ENTA is a Stata pipeline that builds European National Transfer Accounts
 for 26 EU countries. It combines household microdata (EU-SILC, HBS,
 EUROMOD, LFS) with Eurostat ESA2010 aggregates to produce per-capita,
 per-age, per-sex profiles of income, consumption, taxes, and public and
