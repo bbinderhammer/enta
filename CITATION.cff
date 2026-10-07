@@ -13,7 +13,7 @@ authors:
     given-names: Bernhard
     orcid: "https://orcid.org/0000-0003-3082-6383"
     affiliation: "TU Wien; Vienna Institute of Demography, Austrian Academy of Sciences"
-repository-code: "https://github.com/ntaeurope/enta"
+repository-code: "https://github.com/bbinderhammer/enta"
 url: "https://doi.org/10.5281/zenodo.20360412"
 license: MIT
 keywords:
