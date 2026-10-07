@@ -19,12 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-----------------------------------------------------------------------------
-
-This licence covers the code of this repository. The ENTA data, the manual
-and the codebook are published under the Creative Commons Attribution 4.0
-International licence (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/).
-The input files from Eurostat, the United Nations, the World Bank, DG TAXUD
-and the benchmark data remain under the terms of their sources, which are
-named in README.md and in the manual.
