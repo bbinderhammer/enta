@@ -42,7 +42,6 @@
 
 global country "DE AT BE BG CY CZ DK EE EL ES FI FR HR HU IE IT LT LU LV NL PL PT RO SE SI SK"
 
-
 ********************************************************************************
 * 0.  COMBINE EU-SILC AND HBS DATA
 ********************************************************************************
@@ -82,16 +81,21 @@ foreach x in $country {
     * These variables describe each household's age structure and are used
     * as regressors in the consumption model (Section 1).
 
+    quietly sum AGEGR5 if CON == 1
+    gen AGEGR5r = AGEGR5
+    replace AGEGR5r = r(max) if AGEGR5 > r(max) & AGEGR5 < .
+
     * Number of children under 20, capped at 3
-    bysort YEAR HHID: egen NCHILD20 = total(AGEGR5 < 20)
+    bysort CON YEAR HHID: egen NCHILD20 = total(AGEGR5r < 20)
     replace NCHILD20 = 3 if NCHILD20 > 3
 
     * Number of members in selected age groups
-    bysort YEAR HHID: egen NAGE25 = total(AGEGR5 == 20 | AGEGR5 == 25 | AGEGR5 == 30)
-    bysort YEAR HHID: egen NAGE65 = total(AGEGR5 == 65)
-    bysort YEAR HHID: egen NAGE70 = total(AGEGR5 == 70)
-    bysort YEAR HHID: egen NAGE75 = total(AGEGR5 == 75)
-    bysort YEAR HHID: egen NAGE80 = total(AGEGR5 == 80)
+    bysort CON YEAR HHID: egen NAGE25 = total(AGEGR5r == 20 | AGEGR5r == 25 | AGEGR5r == 30)
+    bysort CON YEAR HHID: egen NAGE65 = total(AGEGR5r == 65)
+    bysort CON YEAR HHID: egen NAGE70 = total(AGEGR5r == 70)
+    bysort CON YEAR HHID: egen NAGE75 = total(AGEGR5r == 75)
+    bysort CON YEAR HHID: egen NAGE80 = total(AGEGR5r == 80)
+    drop AGEGR5r
 
 
     ************************************************************
